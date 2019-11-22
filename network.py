@@ -19,11 +19,10 @@ from Hackathon.fad_mlt.statistics import *
 
 def create_model():
 	nn = Sequential()
-	nn.add(Dense(64, input_shape=(len(roi),)))
-	nn.add(Dense(512, activation="sigmoid"))
-	nn.add(Dense(20))
+	nn.add(Dense(len(roi), input_shape=(len(roi),)))
+	nn.add(Dense(1000, activation="sigmoid"))
 	nn.add(Dense(1))
-	nn.compile("rmsprop", "mse", metrics=['accuracy'])
+	nn.compile("adadelta", "mse", metrics=['mae'])
 
 	return nn
 
@@ -66,24 +65,33 @@ def read_data(fname, slice=None):
 	return train_data, train_labels
 
 
+def check(nn : Model, test_data, test_labels):
+	s = 0
+	cnt = 0
+	for i in range(len(test_data)):
+		y = nn.predict([[test_data[i]]])[0][0]
+		s += abs(test_labels[i] - y)
+		cnt += 1
+
+	print(s / cnt)
+
 def main():
-	train_data, train_labels = read_data(base_path, (0, 30))
-	#test_data, test_labels = read_data(base_path, (30, 40))
+	train_data, train_labels = read_data(base_path, (0, 2))
+	test_data, test_labels = read_data(base_path, (10, 11))
 
 	train_data = np.asarray(train_data)
 	train_labels = np.asarray(train_labels)
 
-	#test_data = np.asarray(test_data)
-	#test_labels = np.asarray(test_labels)
+	test_data = np.asarray(test_data)
+	test_labels = np.asarray(test_labels)
 
 	# print(train_data)
 	# print(train_labels)
 
 	nn = create_model()
-	nn.fit(train_data, train_labels, 1000, 500)
-	# nn.evaluate(test_data, test_labels)
-	print(nn.predict([[[2, 0, 0, 0, 0, 0, 0]]]))
-
+	nn.fit(train_data, train_labels, 100, 100)
+	#print(nn.evaluate(test_data, test_labels))
+	check(nn, test_data, test_labels)
 
 if __name__ == '__main__':
 	main()
