@@ -40,12 +40,11 @@ def lat_value_dep(file_obj, column):
 	for row in data_base:
 		if row[0] == '':
 			continue
-		i = 0
 		lat = float(row[16])
 
 		k = values_in_column.index(row[column])
-		max_for_values_in_column[k] = max(max_for_values_in_column[i], lat)
-		min_for_values_in_column[k] = min(min_for_values_in_column[i], lat)
+		max_for_values_in_column[k] = max(max_for_values_in_column[k], lat)
+		min_for_values_in_column[k] = min(min_for_values_in_column[k], lat)
 		cnt_for_values_in_column[k] += 1
 		sum_for_values_in_column[k] += abs(lat)
 
