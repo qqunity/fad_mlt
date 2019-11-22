@@ -44,7 +44,8 @@ def lat_value_dep(file_obj, column):
 
 		k = values_in_column.index(row[column])
 		max_for_values_in_column[k] = max(max_for_values_in_column[k], lat)
-		min_for_values_in_column[k] = min(min_for_values_in_column[k], lat)
+		if lat > 0:
+			min_for_values_in_column[k] = min(min_for_values_in_column[k], lat)
 		cnt_for_values_in_column[k] += 1
 		sum_for_values_in_column[k] += abs(lat)
 
@@ -52,8 +53,9 @@ def lat_value_dep(file_obj, column):
 	value_dep = []
 	i = 0
 	for val in values_in_column:
-		value_dep += [val, {'max': max_for_values_in_column[i], 'min': min_for_values_in_column[i],
-							'average': (sum_for_values_in_column[i] / cnt_for_values_in_column[i])}]
+		value_dep.append([])
+		value_dep[-1].append([val, {'max': max_for_values_in_column[i], 'min': min_for_values_in_column[i],
+							'average': (sum_for_values_in_column[i] / cnt_for_values_in_column[i])}])
 		i += 1
 
 	return value_dep
@@ -112,6 +114,5 @@ def set_labels(train_data, roi, f_obj):
 		new_train_data.append(row)
 
 	return new_train_data
-
 
 
