@@ -8,7 +8,7 @@ import csv
 import numpy as np
 from numba import jit
 
-from keras import Model, Sequential
+from keras import Model, Sequential, optimizers, regularizers
 from keras.layers import Dense
 from keras.utils import to_categorical
 
@@ -17,9 +17,9 @@ from Hackathon.fad_mlt.statistics import *
 
 
 
-def create_model():
+def create_model(input_shape):
 	nn = Sequential()
-	nn.add(Dense(len(roi), input_shape=(len(roi),)))
+	nn.add(Dense(len(roi), input_shape=input_shape))
 	nn.add(Dense(1000, activation="sigmoid"))
 	nn.add(Dense(1))
 	nn.compile("adadelta", "mse", metrics=['mae'])
@@ -27,6 +27,19 @@ def create_model():
 	return nn
 
 
+def filter_data(data, without):
+	new_data = []
+	while len(data) > 0:
+		row = data[-1]
+		data.pop(-1)
+
+		for td in without:
+			row.pop(td)
+
+		new_data.append(row)
+
+	new_data.reverse()
+	return new_data
 
 def read_data(fname, slice=None):
 	train_data = []
@@ -76,8 +89,12 @@ def check(nn : Model, test_data, test_labels):
 	print(s / cnt)
 
 def main():
-	train_data, train_labels = read_data(base_path, (0, 2))
-	test_data, test_labels = read_data(base_path, (10, 11))
+	train_data, train_labels = read_data(base_path, (0, 80))
+	test_data, test_labels = read_data(base_path, (80, 90))
+
+	without = (0, )
+	train_data = filter_data(train_data, without)
+	test_data = filter_data(test_data, without)
 
 	train_data = np.asarray(train_data)
 	train_labels = np.asarray(train_labels)
@@ -88,8 +105,9 @@ def main():
 	# print(train_data)
 	# print(train_labels)
 
-	nn = create_model()
-	nn.fit(train_data, train_labels, 100, 100)
+	nn = create_model((len(roi) - len(without), ))
+	nn.fit(train_data, train_labels, 1000, 50)
+	nn.save_weights("weights_without_time.h5")
 	#print(nn.evaluate(test_data, test_labels))
 	check(nn, test_data, test_labels)
 
