@@ -1,3 +1,6 @@
+import os
+os.environ["CUDA_VISIBLE_DEVICES"]="-1"
+
 import datetime
 
 import csv
@@ -9,14 +12,14 @@ from keras import Model, Sequential
 from keras.layers import Dense
 from keras.utils import to_categorical
 
+from fad_mlt.statistics import *
 
-roi = [1, 5, 6, 12, 13, 14, 15]
-lat_index = 16
-base_path = 'export.csv'
+
+
 
 def create_model():
 	nn = Sequential()
-	nn.add(Dense(len(roi), activation="sigmoid", input_shape=(len(roi), )))
+	nn.add(Dense(len(roi), activation="sigmoid", input_shape=(len(roi),)))
 	nn.add(Dense(512, activation="sigmoid"))
 	nn.add(Dense(1))
 	nn.compile("adadelta", "mse", metrics=['accuracy'])
@@ -24,20 +27,8 @@ def create_model():
 	return nn
 
 
-def time_to_daytime(time):
-	time = datetime.datetime.strptime(time, '%Y-%m-%d %H:%M:%S.%f')
-	ytime = time
-	ytime = ytime.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
 
-
-	time = int(time.timestamp() - ytime.timestamp())
-	return time
-
-def to_vec(train_data):
-	return train_data
-
-
-def read_data(fname, slice = None):
+def read_data(fname, slice=None):
 	train_data = []
 	train_labels = []
 
@@ -70,22 +61,27 @@ def read_data(fname, slice = None):
 
 		train_labels.append(row[lat_index])
 
-	train_data = to_vec(train_data)
+	labels, labels_name, labels_id = get_labels(train_data, roi, open(base_path, 'r'))
+	print(labels, labels_name, labels_id)
 	return train_data, train_labels
 
 
-
 def main():
-	print(time_to_daytime('2019-10-24 10:50:08.171513'))
-	# train_data, train_labels = read_data(base_path, (0, 1))
+	train_data, train_labels = read_data(base_path, (0, 0.005))
+	#test_data, test_labels = read_data(base_path, (30, 40))
 	#
 	# train_data = np.asarray(train_data)
 	# train_labels = np.asarray(train_labels)
 	#
+	# test_data = np.asarray(test_data)
+	# test_labels = np.asarray(test_labels)
+	#
+	#
 	# print(train_data.shape)
-
+	#
 	# nn = create_model()
-	# nn.fit(train_data,train_labels, 25, 500, )
+	# nn.fit(train_data,train_labels, 25, 500)
+	# nn.evaluate(test_data, test_labels)
 
 
 if __name__ == '__main__':
