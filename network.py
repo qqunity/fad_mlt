@@ -77,7 +77,6 @@ def read_data(fname, slice=None):
 	train_data = set_labels(train_data, roi, f_obj)
 	return train_data, train_labels
 
-
 def check(nn : Model, test_data, test_labels):
 	s = 0
 	cnt = 0
@@ -109,6 +108,21 @@ def main():
 	nn.fit(train_data, train_labels, 1000, 50)
 	nn.save_weights("weights_without_time.h5")
 	#print(nn.evaluate(test_data, test_labels))
+	check(nn, test_data, test_labels)
+
+
+def big_check():
+	test_data, test_labels = read_data(base_path, (50, 80))
+
+	without = (0, )
+
+	test_data = filter_data(test_data, without)
+
+	test_data = np.asarray(test_data)
+	test_labels = np.asarray(test_labels)
+
+	nn = create_model((len(roi) - len(without), ))
+	nn.load_weights('weights_without_time.h5')
 	check(nn, test_data, test_labels)
 
 if __name__ == '__main__':
