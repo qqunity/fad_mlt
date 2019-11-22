@@ -61,8 +61,8 @@ def read_data(fname, slice=None):
 
 		train_labels.append(row[lat_index])
 
-	labels, labels_name, labels_id = get_labels(train_data, roi, open(base_path, 'r'))
-	print(labels, labels_name, labels_id)
+	train_data = set_labels(train_data, roi, f_obj)
+	print(train_data)
 	return train_data, train_labels
 
 

@@ -1,8 +1,8 @@
 import csv
 import datetime
 
-labels = [[[0, 1, 2, 3], [0, 1, 2, 3], [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]], [['req1', 'delete', 'update', 'req2'], ['London', 'Obninsk', 'NewYork', 'Moscow'], ['B1', 'E3', 'M2', 'E2', 'M1', 'M4', 'M3', 'D1', 'A1', 'E1']], [1, 4, 5]]
-roi = [1, 3, 5, 6, 12, 13, 14, 15]
+labels_cached = [[[0, 1, 2, 3], [0, 1, 2, 3], [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]], [['req1', 'delete', 'update', 'req2'], ['London', 'Obninsk', 'NewYork', 'Moscow'], ['B1', 'E3', 'M2', 'E2', 'M1', 'M4', 'M3', 'D1', 'A1', 'E1']], [1, 4, 5]]
+roi = [2, 3, 5, 6, 12, 13, 14, 15]
 lat_index = 16
 base_path = 'export.csv'
 
@@ -93,7 +93,7 @@ def get_labels(train_data, roi, f_obj):
 
 def set_labels(train_data, roi, f_obj):
 	f_obj.seek(0)
-	labels, labels_name, labels_id = labels[0], labels[1], labels[2]
+	labels, labels_name, labels_id = labels_cached[0], labels_cached[1], labels_cached[2]
 	new_train_data = []
 	for row in train_data:
 		for i in range(len(labels_id)):
@@ -102,9 +102,16 @@ def set_labels(train_data, roi, f_obj):
 			while val != labels_name[i][j]:
 				j += 1
 			row[labels_id[i]] = labels[i][j]
-		row[2] = time_to_yearly_stamp(row[2])
-		new_train_data.append([])
-		new_train_data[-1].append(row)
+		row[0] = time_to_yearly_stamp(row[0])
+
+		for i in range(len(row)):
+			if row[i] == '':
+				row[i] = 0
+			else:
+				row[i] = int(row[i])
+
+		new_train_data.append(row)
+
 	return new_train_data
 
 
