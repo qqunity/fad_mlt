@@ -1,5 +1,14 @@
 import csv
+import datetime
 
+
+def time_to_yearly_stamp(time):
+	time = datetime.datetime.strptime(time, '%Y-%m-%d %H:%M:%S.%f')
+	ytime = time
+	ytime = ytime.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+
+	time = int(time.timestamp() - ytime.timestamp())
+	return time
 
 
 def uniq_type_in_column(file_obj, column):
