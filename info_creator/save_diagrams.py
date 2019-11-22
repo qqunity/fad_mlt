@@ -41,5 +41,19 @@ def get_diagrams():
         k += 1
 
 
+def get_lat_distr():
+    fname = '../lat.csv'
+    f_obj = open(fname, 'r')
+    db = csv.reader(f_obj)
+    train_data = []
+
+    for row in db:
+        if float(row[0]) > 0:
+            train_data.append(float(row[0]))
+
+    plt.hist(train_data, bins=150, range=(0, 300))
+    plt.show()
+
+
 if __name__ == '__main__':
-    get_diagrams()
+    get_lat_distr()
