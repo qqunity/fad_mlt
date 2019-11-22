@@ -116,6 +116,20 @@ def get_median(f_obj, column):
         i += 1
     return value_dep
 
+def create_lat_file(f_obj):
+    f_obj.seek(0)
+    data_base = csv.reader(f_obj)
+    f_obj.seek(0)
+    lat = []
+    for row in data_base:
+        if row[0] == '':
+            continue
+        lat.append([float(row[16])])
+    lat.sort()
+    with open('/home/philip/PycharmProjects/ExactPro_project/fad_mlt/lat.csv', "w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerows(lat)
+
 
 def set_labels(train_data, roi, f_obj):
     f_obj.seek(0)
@@ -143,4 +157,4 @@ def set_labels(train_data, roi, f_obj):
 
 if __name__ == '__main__':
     csv_path = '/home/philip/PycharmProjects/ExactPro_project/Data_set/export.csv'
-    print(get_median(open(csv_path, 'r'), 15))
+    create_lat_file(open(csv_path, 'r'))
