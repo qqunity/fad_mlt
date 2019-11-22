@@ -12,17 +12,18 @@ from keras import Model, Sequential
 from keras.layers import Dense
 from keras.utils import to_categorical
 
-from fad_mlt.statistics import *
+from Hackathon.fad_mlt.statistics import *
 
 
 
 
 def create_model():
 	nn = Sequential()
-	nn.add(Dense(len(roi), activation="sigmoid", input_shape=(len(roi),)))
+	nn.add(Dense(64, input_shape=(len(roi),)))
 	nn.add(Dense(512, activation="sigmoid"))
+	nn.add(Dense(20))
 	nn.add(Dense(1))
-	nn.compile("adadelta", "mse", metrics=['accuracy'])
+	nn.compile("rmsprop", "mse", metrics=['accuracy'])
 
 	return nn
 
@@ -59,29 +60,29 @@ def read_data(fname, slice=None):
 		for i in roi:
 			train_data[-1].append(row[i])
 
-		train_labels.append(row[lat_index])
+		train_labels.append(float(row[lat_index]))
 
 	train_data = set_labels(train_data, roi, f_obj)
-	print(train_data)
 	return train_data, train_labels
 
 
 def main():
-	train_data, train_labels = read_data(base_path, (0, 0.005))
+	train_data, train_labels = read_data(base_path, (0, 30))
 	#test_data, test_labels = read_data(base_path, (30, 40))
-	#
-	# train_data = np.asarray(train_data)
-	# train_labels = np.asarray(train_labels)
-	#
-	# test_data = np.asarray(test_data)
-	# test_labels = np.asarray(test_labels)
-	#
-	#
-	# print(train_data.shape)
-	#
-	# nn = create_model()
-	# nn.fit(train_data,train_labels, 25, 500)
+
+	train_data = np.asarray(train_data)
+	train_labels = np.asarray(train_labels)
+
+	#test_data = np.asarray(test_data)
+	#test_labels = np.asarray(test_labels)
+
+	# print(train_data)
+	# print(train_labels)
+
+	nn = create_model()
+	nn.fit(train_data, train_labels, 1000, 500)
 	# nn.evaluate(test_data, test_labels)
+	print(nn.predict([[[2, 0, 0, 0, 0, 0, 0]]]))
 
 
 if __name__ == '__main__':

@@ -1,10 +1,10 @@
 import csv
 import datetime
 
-labels_cached = [[[0, 1, 2, 3], [0, 1, 2, 3], [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]], [['req1', 'delete', 'update', 'req2'], ['London', 'Obninsk', 'NewYork', 'Moscow'], ['B1', 'E3', 'M2', 'E2', 'M1', 'M4', 'M3', 'D1', 'A1', 'E1']], [1, 4, 5]]
-roi = [2, 3, 5, 6, 12, 13, 14, 15]
+labels_cached = [[[0, 1, 2, 3], [0, 1, 2, 3], [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]], [['req1', 'delete', 'update', 'req2'], ['London', 'Obninsk', 'NewYork', 'Moscow'], ['B1', 'E3', 'M2', 'E2', 'M1', 'M4', 'M3', 'D1', 'A1', 'E1']], [0, 3, 4]]
+roi = [3, 5, 6, 12, 13, 14, 15]
 lat_index = 16
-base_path = 'export.csv'
+base_path = '/media/dmaksimov/Miscellanea/Transactions dataset/export.csv'
 
 def time_to_yearly_stamp(time):
 	time = datetime.datetime.strptime(time, '%Y-%m-%d %H:%M:%S.%f')
@@ -102,13 +102,13 @@ def set_labels(train_data, roi, f_obj):
 			while val != labels_name[i][j]:
 				j += 1
 			row[labels_id[i]] = labels[i][j]
-		row[0] = time_to_yearly_stamp(row[0])
+		# row[0] = time_to_yearly_stamp(row[0])
 
 		for i in range(len(row)):
 			if row[i] == '':
-				row[i] = 0
+				row[i] = 0.0
 			else:
-				row[i] = int(row[i])
+				row[i] = float(row[i])
 
 		new_train_data.append(row)
 
