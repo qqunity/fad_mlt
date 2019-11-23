@@ -6,7 +6,7 @@ labels_cached = [[[0, 1, 2, 3], [0, 1, 2, 3], [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]],
                   ['B1', 'E3', 'M2', 'E2', 'M1', 'M4', 'M3', 'D1', 'A1', 'E1']], [1, 4, 5]]
 roi = [2, 3, 5, 6, 12, 13, 14, 15]
 lat_index = 16
-base_path = '/media/dmaksimov/Miscellanea/Transactions dataset/export.csv'
+base_path = '/home/philip/PycharmProjects/ExactPro_project/Data_set/export.csv'
 
 
 def time_to_yearly_stamp(time):
@@ -111,8 +111,7 @@ def get_median(f_obj, column):
     value_dep = []
     i = 0
     for val in values_in_column:
-        value_dep.append([])
-        value_dep[-1].append([val, median_in_column[i][(len(median_in_column[i]) // 2)]])
+        value_dep.append([val, median_in_column[i][(len(median_in_column[i]) // 2)][0]])
         i += 1
     return value_dep
 
@@ -154,7 +153,28 @@ def set_labels(train_data, roi, f_obj):
 
     return new_train_data
 
+def lat_delta(f_obj, column):
+    f_obj.seek(0)
+    data_base = csv.reader(f_obj)
+    values_in_column = uniq_type_in_column(f_obj, column)
+    sum_lat_in_column = [0] * len(uniq_type_in_column(f_obj, column))
+    cnt_lat_in_column = [0] * len(uniq_type_in_column(f_obj, column))
+    f_obj.seek(0)
+    for row in data_base:
+        if row[0] == '':
+            continue
+        lat = float(row[16])
+        k = values_in_column.index(row[column])
+        cnt_lat_in_column[k] += 1
+        sum_lat_in_column[k] += lat
+    median = get_median(f_obj, column)
+    for i in range(len(median)):
+        median[i][1] = abs( sum_lat_in_column[i] // cnt_lat_in_column[i] - median[i][1])
+    return median
+
 
 if __name__ == '__main__':
     csv_path = '/home/philip/PycharmProjects/ExactPro_project/Data_set/export.csv'
-    create_lat_file(open(csv_path, 'r'))
+    for i in (14, 13, 12, 3, 15):
+        print(lat_delta(open(csv_path, 'r'), i))
+
